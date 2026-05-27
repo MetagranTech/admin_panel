@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://backend-7q2n.onrender.com/api',
 });
 
 // Add a request interceptor to include the JWT token
@@ -19,5 +19,8 @@ export const getBookings = () => API.get('/bookings');
 export const getProviders = () => API.get('/admin/providers');
 export const approveProvider = (id) => API.put(`/admin/providers/${id}/approve`);
 export const getServices = () => API.get('/services');
+export const getNotifications = () => API.get('/notifications');
+export const createNotification = (data) => API.post('/notifications', data);
+export const deleteNotification = (id) => API.delete(`/notifications/${id}`);
 
 export default API;
