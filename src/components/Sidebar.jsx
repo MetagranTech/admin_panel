@@ -13,6 +13,10 @@ import {
 } from 'lucide-react';
 
 export default function Sidebar() {
+  const signOut = () => {
+    localStorage.removeItem('adminToken');
+    window.dispatchEvent(new Event('admin-unauthorized'));
+  };
   return (
     <aside className="w-64 bg-white border-r border-slate-200 flex flex-col fixed h-full z-10">
       <div className="p-8">
@@ -34,7 +38,7 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-slate-100">
-        <button className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-error transition-colors w-full">
+        <button onClick={signOut} className="flex items-center gap-3 px-4 py-3 text-slate-500 hover:text-error transition-colors w-full">
           <LogOut size={20} />
           <span className="font-semibold">Sign Out</span>
         </button>

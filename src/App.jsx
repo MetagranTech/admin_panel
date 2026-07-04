@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import DashboardOverview from './pages/DashboardOverview';
@@ -9,8 +9,16 @@ import RevenueDashboard from './pages/RevenueDashboard';
 import ComplaintsManagement from './pages/ComplaintsManagement';
 import ProviderManagement from './pages/ProviderManagement';
 import NotificationsManagement from './pages/NotificationsManagement';
+import Login from './pages/Login';
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('adminToken')));
+  useEffect(() => {
+    const unauthorized = () => setAuthenticated(false);
+    window.addEventListener('admin-unauthorized', unauthorized);
+    return () => window.removeEventListener('admin-unauthorized', unauthorized);
+  }, []);
+  if (!authenticated) return <Login onLogin={() => setAuthenticated(true)} />;
   return (
     <BrowserRouter>
       <Routes>

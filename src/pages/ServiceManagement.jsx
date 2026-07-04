@@ -1,61 +1,36 @@
-import React from 'react';
-import { Plus, Settings, Trash2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { createService, deleteService, getServices, updateService } from '../api';
+
+const categories = ['Electrician', 'Plumbing', 'AC Repair', 'Fridge Repair', 'Washing Machine Repair', 'Tank Cleaning', 'Bathroom Cleaning', 'Home Cleaning'];
+const empty = { name: '', description: '', category: 'Electrician', basePrice: 499, pricingType: 'inspection', gstPercentage: 18, platformFee: 50, imageUrl: '' };
 
 export default function ServiceManagement() {
-  const services = [
-    { id: 1, name: 'Electrician', price: '499', category: 'Repair', icon: 'bolt' },
-    { id: 2, name: 'Plumbing', price: '399', category: 'Repair', icon: 'droplet' },
-    { id: 3, name: 'Cleaning', price: '799', category: 'Maintenance', icon: 'sparkles' },
-  ];
-
-  return (
-    <div className="card">
-      <div className="flex justify-between items-center mb-10">
-        <h3 className="text-2xl font-bold text-slate-800">Master Services List</h3>
-        <button className="btn btn-primary">
-          <Plus size={18} />
-          Add Service
-        </button>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="text-left text-slate-400 text-xs font-bold tracking-widest uppercase border-b border-slate-100">
-              <th className="pb-4 px-4">Service Name</th>
-              <th className="pb-4 px-4">Category</th>
-              <th className="pb-4 px-4">Base Price</th>
-              <th className="pb-4 px-4">Status</th>
-              <th className="pb-4 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {services.map(service => (
-              <tr key={service.id} className="hover:bg-slate-50 transition-colors group">
-                <td className="py-5 px-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary-light flex items-center justify-center text-primary">
-                      <Settings size={20} />
-                    </div>
-                    <span className="font-bold text-slate-800">{service.name}</span>
-                  </div>
-                </td>
-                <td className="py-5 px-4 font-medium text-slate-500">{service.category}</td>
-                <td className="py-5 px-4 font-bold text-slate-800">₹{service.price}</td>
-                <td className="py-5 px-4">
-                  <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-bold">Active</span>
-                </td>
-                <td className="py-5 px-4 text-right">
-                  <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-2 hover:bg-slate-200 rounded-lg text-slate-600 transition-colors"><Settings size={18} /></button>
-                    <button className="p-2 hover:bg-rose-100 rounded-lg text-error transition-colors"><Trash2 size={18} /></button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+  const [services, setServices] = useState([]);
+  const [form, setForm] = useState(empty);
+  const [editing, setEditing] = useState(null);
+  const [error, setError] = useState('');
+  const load = () => getServices().then((r) => setServices(r.data.services)).catch((e) => setError(e.response?.data?.message || e.message));
+  useEffect(load, []);
+  const save = async (event) => {
+    event.preventDefault(); setError('');
+    try { editing ? await updateService(editing, form) : await createService(form); setForm(empty); setEditing(null); load(); }
+    catch (e) { setError(e.response?.data?.message || e.message); }
+  };
+  const edit = (service) => { setEditing(service._id); setForm({ ...empty, ...service }); };
+  return <div className="grid lg:grid-cols-3 gap-6">
+    <form onSubmit={save} className="card space-y-3"><h3 className="text-xl font-bold">{editing ? 'Edit service' : 'Add service'}</h3>
+      <input className="w-full border rounded p-3" placeholder="Service name" value={form.name} onChange={(e) => setForm({...form, name:e.target.value})} required />
+      <textarea className="w-full border rounded p-3" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description:e.target.value})} />
+      <select className="w-full border rounded p-3" value={form.category} onChange={(e) => setForm({...form, category:e.target.value})}>{categories.map((c) => <option key={c}>{c}</option>)}</select>
+      <select className="w-full border rounded p-3" value={form.pricingType} onChange={(e) => setForm({...form, pricingType:e.target.value})}><option value="inspection">Inspection</option><option value="fixed">Fixed</option></select>
+      <input className="w-full border rounded p-3" type="number" min="1" placeholder="Base price" value={form.basePrice} onChange={(e) => setForm({...form, basePrice:Number(e.target.value)})} />
+      <input className="w-full border rounded p-3" type="number" min="0" placeholder="GST %" value={form.gstPercentage} onChange={(e) => setForm({...form, gstPercentage:Number(e.target.value)})} />
+      <input className="w-full border rounded p-3" type="number" min="0" placeholder="Platform fee" value={form.platformFee} onChange={(e) => setForm({...form, platformFee:Number(e.target.value)})} />
+      <input className="w-full border rounded p-3" placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm({...form, imageUrl:e.target.value})} />
+      {error && <p className="text-red-600">{error}</p>}<button className="btn btn-primary w-full">Save</button>
+    </form>
+    <div className="card lg:col-span-2 overflow-x-auto"><h3 className="text-2xl font-bold mb-6">Services</h3><table className="w-full"><thead><tr><th className="text-left">Name</th><th>Category</th><th>Pricing</th><th>Status</th><th></th></tr></thead>
+      <tbody>{services.map((service) => <tr key={service._id} className="border-t"><td className="py-4 font-bold">{service.name}</td><td>{service.category}</td><td>₹{service.basePrice} / {service.pricingType}</td><td>{service.isActive ? 'Active' : 'Inactive'}</td><td className="text-right space-x-2"><button onClick={() => edit(service)}>Edit</button>{service.isActive && <button className="text-red-600" onClick={async () => { await deleteService(service._id); load(); }}>Disable</button>}</td></tr>)}</tbody>
+    </table></div>
+  </div>;
 }

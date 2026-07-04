@@ -1,48 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getComplaints, resolveComplaint } from '../api';
 
 export default function ComplaintsManagement() {
-  const [complaints, setComplaints] = useState([
-    { id: 'C101', customer: 'John Doe', subject: 'Late Arrival', status: 'pending', date: '2024-05-12' },
-    { id: 'C102', customer: 'Sarah Smith', subject: 'Wrong Pricing', status: 'resolved', date: '2024-05-11' },
-  ]);
-
-  return (
-    <div className="card">
-      <h3 className="text-2xl font-bold mb-8">Customer Complaints</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="text-left text-slate-400 text-xs font-bold uppercase border-b border-slate-100">
-              <th className="pb-4 px-4">Ticket ID</th>
-              <th className="pb-4 px-4">Customer</th>
-              <th className="pb-4 px-4">Subject</th>
-              <th className="pb-4 px-4">Date</th>
-              <th className="pb-4 px-4">Status</th>
-              <th className="pb-4 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {complaints.map(complaint => (
-              <tr key={complaint.id} className="border-b border-slate-50">
-                <td className="py-4 px-4 font-bold text-slate-800">{complaint.id}</td>
-                <td className="py-4 px-4">{complaint.customer}</td>
-                <td className="py-4 px-4">{complaint.subject}</td>
-                <td className="py-4 px-4">{complaint.date}</td>
-                <td className="py-4 px-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    complaint.status === 'pending' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
-                  }`}>
-                    {complaint.status}
-                  </span>
-                </td>
-                <td className="py-4 px-4 text-right">
-                  <button className="text-primary font-bold hover:underline">Resolve</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
+  const [complaints, setComplaints] = useState([]);
+  const [error, setError] = useState('');
+  const load = () => getComplaints().then((r) => setComplaints(r.data.complaints)).catch((e) => setError(e.response?.data?.message || e.message));
+  useEffect(load, []);
+  const resolve = async (id) => { const resolution = window.prompt('Resolution details'); if (!resolution) return; await resolveComplaint(id, resolution); load(); };
+  return <div className="card overflow-x-auto"><h3 className="text-2xl font-bold mb-6">Customer Complaints</h3>{error && <p className="text-red-600">{error}</p>}
+    <table className="w-full"><thead><tr className="text-left"><th>Customer</th><th>Booking</th><th>Subject</th><th>Description</th><th>Status</th><th></th></tr></thead><tbody>
+      {complaints.map((item) => <tr className="border-t" key={item._id}><td className="py-4">{item.user?.name}<small className="block">{item.user?.phone}</small></td><td>{item.booking?.bookingId}</td><td>{item.subject}</td><td>{item.description}</td><td>{item.status}</td><td>{item.status !== 'resolved' && <button className="btn btn-primary" onClick={() => resolve(item._id)}>Resolve</button>}</td></tr>)}
+    </tbody></table>
+  </div>;
 }
