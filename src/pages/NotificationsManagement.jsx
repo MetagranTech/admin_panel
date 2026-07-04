@@ -13,7 +13,7 @@ export default function NotificationsManagement() {
       setLoading(true);
       const res = await getNotifications();
       if (res.data.success) {
-        setNotifications(res.data.notifications);
+        setNotifications(Array.isArray(res.data.notifications) ? res.data.notifications : []);
       }
     } catch (error) {
       console.error('Error fetching notifications:', error);

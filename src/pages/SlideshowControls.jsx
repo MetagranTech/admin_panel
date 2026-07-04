@@ -4,7 +4,12 @@ import { getBanners, updateBanners } from '../api';
 export default function SlideshowControls() {
   const [banners, setBanners] = useState({ row3: [], row5: [] });
   const [saving, setSaving] = useState(false);
-  useEffect(() => { getBanners().then((r) => setBanners(r.data.banners)); }, []);
+  useEffect(() => {
+    getBanners().then((r) => setBanners({
+      row3: Array.isArray(r.data?.banners?.row3) ? r.data.banners.row3 : [],
+      row5: Array.isArray(r.data?.banners?.row5) ? r.data.banners.row5 : [],
+    }));
+  }, []);
   const update = (row, index, value) => setBanners((current) => ({ ...current, [row]: current[row].map((item, i) => i === index ? value : item) }));
   const add = (row) => setBanners((current) => ({ ...current, [row]: [...current[row], ''] }));
   const remove = (row, index) => setBanners((current) => ({ ...current, [row]: current[row].filter((_, i) => i !== index) }));

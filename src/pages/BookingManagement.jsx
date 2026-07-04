@@ -4,7 +4,11 @@ import { getBookings } from '../api';
 export default function BookingManagement() {
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState('');
-  useEffect(() => { getBookings().then((r) => setBookings(r.data.bookings)).catch((e) => setError(e.response?.data?.message || e.message)); }, []);
+  useEffect(() => {
+    getBookings()
+      .then((r) => setBookings(Array.isArray(r.data?.bookings) ? r.data.bookings : []))
+      .catch((e) => setError(e.response?.data?.message || e.message));
+  }, []);
   return <div className="card overflow-x-auto">
     <h3 className="text-2xl font-bold mb-6">All Bookings</h3>{error && <p className="text-red-600">{error}</p>}
     <table className="w-full"><thead><tr className="text-left border-b"><th className="p-3">Booking</th><th>Customer</th><th>Service</th><th>Provider</th><th>Status</th><th>Payment</th><th className="text-right">Total</th></tr></thead>

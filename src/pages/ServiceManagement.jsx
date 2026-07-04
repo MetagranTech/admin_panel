@@ -9,8 +9,10 @@ export default function ServiceManagement() {
   const [form, setForm] = useState(empty);
   const [editing, setEditing] = useState(null);
   const [error, setError] = useState('');
-  const load = () => getServices().then((r) => setServices(r.data.services)).catch((e) => setError(e.response?.data?.message || e.message));
-  useEffect(load, []);
+  const load = () => getServices()
+    .then((r) => setServices(Array.isArray(r.data?.services) ? r.data.services : []))
+    .catch((e) => setError(e.response?.data?.message || e.message));
+  useEffect(() => { load(); }, []);
   const save = async (event) => {
     event.preventDefault(); setError('');
     try { editing ? await updateService(editing, form) : await createService(form); setForm(empty); setEditing(null); load(); }

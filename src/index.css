@@ -7,13 +7,43 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: #1a1a1a;
   background-color: #f8f9fb;
 
   --primary: #1068A8;
   --primary-dark: #0a4d7a;
   --primary-light: #d3e3f5;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #f8f9fb;
+}
+
+input,
+textarea,
+select {
+  color-scheme: light;
+  color: #0f172a;
+  background-color: #ffffff;
+  caret-color: #0f172a;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0f172a;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  transition: background-color 9999s ease-out;
 }
 
 @layer components {

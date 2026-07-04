@@ -4,8 +4,10 @@ import { getProviders, updateProviderStatus } from '../api';
 export default function ProviderManagement() {
   const [providers, setProviders] = useState([]);
   const [error, setError] = useState('');
-  const load = () => getProviders().then((r) => setProviders(r.data.providers)).catch((e) => setError(e.response?.data?.message || e.message));
-  useEffect(load, []);
+  const load = () => getProviders()
+    .then((r) => setProviders(Array.isArray(r.data?.providers) ? r.data.providers : []))
+    .catch((e) => setError(e.response?.data?.message || e.message));
+  useEffect(() => { load(); }, []);
   const changeStatus = async (id, status) => {
     const reason = status === 'pending' ? window.prompt('Rejection reason') : undefined;
     if (status === 'pending' && !reason) return;
