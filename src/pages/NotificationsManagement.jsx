@@ -6,6 +6,7 @@ export default function NotificationsManagement() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [activeTarget, setActiveTarget] = useState('customer');
   const [formData, setFormData] = useState({ title: '', body: '', type: 'offer', targetApp: 'customer' });
 
   const fetchNotifications = async () => {
@@ -25,6 +26,15 @@ export default function NotificationsManagement() {
   useEffect(() => {
     fetchNotifications();
   }, []);
+
+  const filteredNotifications = notifications.filter((notif) =>
+    (notif.targetApp || 'customer') === activeTarget || notif.targetApp === 'both'
+  );
+
+  const openCreateModal = (targetApp) => {
+    setFormData({ title: '', body: '', type: 'offer', targetApp });
+    setShowAddModal(true);
+  };
 
   const handleCreate = async () => {
     if (!formData.title || !formData.body) return alert('Please fill all fields');
@@ -60,12 +70,37 @@ export default function NotificationsManagement() {
           <p className="text-slate-500">Manage community reviews and broadcast offers.</p>
         </div>
         <button 
-          onClick={() => setShowAddModal(true)}
+          onClick={() => openCreateModal(activeTarget)}
           className="btn btn-primary"
         >
           <Plus size={18} />
-          Post New Offer/Update
+          Send {activeTarget === 'service' ? 'Service Man' : 'Customer'} Notification
         </button>
+      </div>
+
+      <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-3">
+        {[
+          { key: 'customer', label: 'Customer Notifications', helper: 'Offers, coupons and updates for Customer App' },
+          { key: 'service', label: 'Service Man Notifications', helper: 'Provider updates, maintenance and work alerts' },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTarget(tab.key)}
+            className={`text-left rounded-2xl border p-5 transition-all ${
+              activeTarget === tab.key
+                ? 'border-[#1068A8] bg-blue-50 shadow-sm'
+                : 'border-slate-100 bg-white hover:bg-slate-50'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Bell size={20} className={activeTarget === tab.key ? 'text-[#1068A8]' : 'text-slate-400'} />
+              <div>
+                <p className={`font-bold ${activeTarget === tab.key ? 'text-[#1068A8]' : 'text-slate-800'}`}>{tab.label}</p>
+                <p className="text-sm text-slate-500 mt-1">{tab.helper}</p>
+              </div>
+            </div>
+          </button>
+        ))}
       </div>
 
       <div className="overflow-x-auto">
@@ -83,7 +118,7 @@ export default function NotificationsManagement() {
               </tr>
             </thead>
             <tbody>
-              {notifications.map(notif => (
+              {filteredNotifications.map(notif => (
                 <tr key={notif._id} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
                   <td className="py-4 px-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -117,9 +152,11 @@ export default function NotificationsManagement() {
                   </td>
                 </tr>
               ))}
-              {notifications.length === 0 && (
+              {filteredNotifications.length === 0 && (
                 <tr>
-                  <td colSpan="5" className="py-20 text-center text-slate-400">No notifications found</td>
+                  <td colSpan="5" className="py-20 text-center text-slate-400">
+                    No {activeTarget === 'service' ? 'Service Man' : 'Customer'} notifications found
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -161,7 +198,9 @@ export default function NotificationsManagement() {
                     onChange={(e) => setFormData({...formData, type: e.target.value})}
                   >
                     <option value="offer">Offer</option>
+                    <option value="coupon">Coupon</option>
                     <option value="update">Update</option>
+                    <option value="maintenance">Maintenance</option>
                   </select>
                 </div>
                 <div>
