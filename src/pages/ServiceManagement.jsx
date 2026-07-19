@@ -19,15 +19,28 @@ export default function ServiceManagement() {
     catch (e) { setError(e.response?.data?.message || e.message); }
   };
   const edit = (service) => { setEditing(service._id); setForm({ ...empty, ...service }); };
+  const gstAmount = Number(form.basePrice || 0) * Number(form.gstPercentage || 0) / 100;
+  const customerTotal = Number(form.basePrice || 0) + gstAmount + Number(form.platformFee || 0);
   return <div className="grid lg:grid-cols-3 gap-6">
     <form onSubmit={save} className="card space-y-3"><h3 className="text-xl font-bold">{editing ? 'Edit service' : 'Add service'}</h3>
       <input className="w-full border rounded p-3" placeholder="Service name" value={form.name} onChange={(e) => setForm({...form, name:e.target.value})} required />
       <textarea className="w-full border rounded p-3" placeholder="Description" value={form.description} onChange={(e) => setForm({...form, description:e.target.value})} />
       <select className="w-full border rounded p-3" value={form.category} onChange={(e) => setForm({...form, category:e.target.value})}>{categories.map((c) => <option key={c}>{c}</option>)}</select>
       <select className="w-full border rounded p-3" value={form.pricingType} onChange={(e) => setForm({...form, pricingType:e.target.value})}><option value="inspection">Inspection</option><option value="fixed">Fixed</option></select>
-      <input className="w-full border rounded p-3" type="number" min="1" placeholder="Base price" value={form.basePrice} onChange={(e) => setForm({...form, basePrice:Number(e.target.value)})} />
-      <input className="w-full border rounded p-3" type="number" min="0" placeholder="GST %" value={form.gstPercentage} onChange={(e) => setForm({...form, gstPercentage:Number(e.target.value)})} />
-      <input className="w-full border rounded p-3" type="number" min="0" placeholder="Platform fee" value={form.platformFee} onChange={(e) => setForm({...form, platformFee:Number(e.target.value)})} />
+      <label className="block text-sm font-semibold">Base Price (₹)
+        <input className="mt-1 w-full border rounded p-3 font-normal" type="number" min="1" value={form.basePrice} onChange={(e) => setForm({...form, basePrice:Number(e.target.value)})} />
+      </label>
+      <label className="block text-sm font-semibold">GST (%)
+        <input className="mt-1 w-full border rounded p-3 font-normal" type="number" min="0" value={form.gstPercentage} onChange={(e) => setForm({...form, gstPercentage:Number(e.target.value)})} />
+      </label>
+      <label className="block text-sm font-semibold">Platform Fee (₹)
+        <input className="mt-1 w-full border rounded p-3 font-normal" type="number" min="0" value={form.platformFee} onChange={(e) => setForm({...form, platformFee:Number(e.target.value)})} />
+      </label>
+      <div className="rounded border border-blue-200 bg-blue-50 p-3 text-sm">
+        <p className="font-semibold">Customer Final Amount</p>
+        <p>Base Price + GST + Platform Fee</p>
+        <p className="mt-1 font-bold">₹{Number(form.basePrice || 0).toFixed(2)} + ₹{gstAmount.toFixed(2)} + ₹{Number(form.platformFee || 0).toFixed(2)} = ₹{customerTotal.toFixed(2)}</p>
+      </div>
       <input className="w-full border rounded p-3" placeholder="Image URL" value={form.imageUrl} onChange={(e) => setForm({...form, imageUrl:e.target.value})} />
       {error && <p className="text-red-600">{error}</p>}<button className="btn btn-primary w-full">Save</button>
     </form>
