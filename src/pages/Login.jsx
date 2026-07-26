@@ -21,7 +21,10 @@ export default function Login({ onLogin }) {
 
   return <main className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
     <form onSubmit={submit} className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md space-y-5">
-      <h1 className="text-3xl font-bold">Home Step In Admin</h1>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Home Step In</h1>
+        <p className="mt-1 text-xs font-bold uppercase tracking-[0.28em] text-[#1068A8] sm:text-sm">Admin Console</p>
+      </div>
       <input className="w-full border rounded-xl p-3" type="email" placeholder="Admin email" value={email} onChange={(e) => setEmail(e.target.value)} required />
       <input className="w-full border rounded-xl p-3" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       {error && <p className="text-red-600">{error}</p>}
