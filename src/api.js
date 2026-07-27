@@ -38,5 +38,10 @@ export const createNotification = (data) => API.post('/notifications', data);
 export const deleteNotification = (id) => API.delete(`/notifications/${id}`);
 export const getBanners = () => API.get('/config/banners');
 export const updateBanners = (data) => API.put('/config/banners', data);
+export const uploadBanner = (row, image) => {
+  const data = new FormData();
+  data.append('image', image);
+  return API.post('/config/banners/upload', data, { params: { row } });
+};
 
 export default API;
