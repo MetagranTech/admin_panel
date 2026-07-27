@@ -22,6 +22,8 @@ API.interceptors.response.use((response) => response, (error) => {
 export const login = (credentials) => API.post('/auth/admin/login', credentials);
 export const getStats = () => API.get('/admin/stats');
 export const getBookings = () => API.get('/admin/bookings');
+export const getPayouts = (status) => API.get('/admin/payouts', { params: status ? { status } : {} });
+export const updatePayoutStatus = (id, status) => API.put(`/admin/payouts/${id}/status`, { status });
 export const getProviders = (status) => API.get('/admin/providers', { params: status ? { status } : {} });
 export const updateProviderStatus = (id, status, rejectionReason) => API.put(`/admin/providers/${id}/status`, { status, rejectionReason });
 export const approveProvider = (id) => updateProviderStatus(id, 'active');

@@ -10,6 +10,7 @@ import {
   BarChart3,
   MessageSquare,
   Bell
+  ,Wallet
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -32,6 +33,7 @@ export default function Sidebar() {
         <NavItem to="/services" icon={<Settings size={20} />} label="Service Pricing" />
         <NavItem to="/bookings" icon={<Calendar size={20} />} label="Bookings" />
         <NavItem to="/revenue" icon={<BarChart3 size={20} />} label="Revenue Reports" />
+        <NavItem to="/wallet" icon={<Wallet size={20} />} label="Wallet & Payouts" />
         <NavItem to="/complaints" icon={<MessageSquare size={20} />} label="Complaints" />
         <NavItem to="/servicemen" icon={<Users size={20} />} label="Service Providers" />
         <NavItem to="/notifications" icon={<Bell size={20} />} label="Notifications" />

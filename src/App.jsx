@@ -10,6 +10,7 @@ import ComplaintsManagement from './pages/ComplaintsManagement';
 import ProviderManagement from './pages/ProviderManagement';
 import NotificationsManagement from './pages/NotificationsManagement';
 import Login from './pages/Login';
+import WalletManagement from './pages/WalletManagement';
 
 function App() {
   const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('adminToken')));
@@ -28,6 +29,7 @@ function App() {
           <Route path="services" element={<ServiceManagement />} />
           <Route path="bookings" element={<BookingManagement />} />
           <Route path="revenue" element={<RevenueDashboard />} />
+          <Route path="wallet" element={<WalletManagement />} />
           <Route path="complaints" element={<ComplaintsManagement />} />
           <Route path="servicemen" element={<ProviderManagement />} />
           <Route path="notifications" element={<NotificationsManagement />} />
